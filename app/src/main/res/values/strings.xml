@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">SodiumTracking</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="trackingbtntxt">Tracking</string>
+    <string name="enteringbtntxt">Entering</string>
+    <string name="settingbtntxt">Setting</string>
+    <string name="title_activity_entering">Entering</string>
+    <string name="enteryourowndatatxt">Enter Your Own Data</string>
+    <string name="foodnametxt">Food Name</string>
+    <string name="yourownsodiumamttxt">Sodium Amount</string>
+    <string name="findbtntxt">FIND</string>
+    <string name="savebtntxt">SAVE</string>
+    <string name="deletebtntxt">DELETE</string>
+    <string name="autocompletebtntxt">atcbtntxt</string>
+    <string name="confirmbtntxt">confirmbtntxt</string>
+    <string name="sodamttxt">sodamttxt</string>
+    <string name="confirmTargertSodAmtbtntxt">Confirm Target Sodium Amount</string>
+    <string name="agetxt">Age: </string>
+    <color name="actvbkcolor">#002E4C</color>
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
