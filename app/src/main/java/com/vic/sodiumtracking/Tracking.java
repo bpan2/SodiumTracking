@@ -12,14 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
 import org.achartengine.model.CategorySeries;
 import org.achartengine.renderer.DefaultRenderer;
 import org.achartengine.renderer.SimpleSeriesRenderer;
-
 import java.util.Calendar;
 import java.util.Date;
 
@@ -34,10 +31,11 @@ public class Tracking extends Fragment {
     TextView targetWarning=null;
     TextView consofarWarning=null;
     private static int dailyTarget;
+    private static int dailyTargetbk;
     private static int consumedsofar;
+    private static int consumedsofarbk;
     public LinearLayout pielayout=null;
     private GraphicalView piechart=null;
-    private Bundle args=null;
     static int consumedsofarpercentile = 0;
     static int amtavailablepercentile = 0;
     static int overLimitpercentile = 0;
@@ -46,14 +44,9 @@ public class Tracking extends Fragment {
     String[] labels;
     int[] values;
 
-    int color1bk;
-    String label1;
-    int value1bk;
-
-    int color2bk;
-    String label2;
-    int value2bk;
-
+    int[] colorbk;
+    String[] labelbk;
+    int[] valuebk;
 
     // Required empty public constructor
     public Tracking() {
@@ -61,11 +54,13 @@ public class Tracking extends Fragment {
 
     public void setDailyTarget(int val){
         dailyTarget = val;
+        dailyTargetbk = val;
         d("dailyTarget: ", Integer.toString(dailyTarget));
     }
 
     public void setConsumedsofar(int val){
         consumedsofar = val;
+        consumedsofarbk = val;
         d("consumedsofar",Integer.toString(consumedsofar));
     }
 
@@ -77,52 +72,57 @@ public class Tracking extends Fragment {
         consofarWarning = (TextView) view.findViewById(R.id.consofarWarning);
         pielayout = (LinearLayout) view.findViewById(R.id.pielayout);
 
-
-        //int indicator = trackingLastState.getInt("color1", -1);
-
-        if(trackingLastState != null){
-        //if(trackingLastState.contains("color1") == true){
-        //if (indicator != -1) {
-            loadLastState();
-            Log.i("tLSnotNull", "Loading tracking Last state");
+        if(dailyTarget == 1) {
+                loadLastState();
         }
-        else{
-            if (dailyTarget > 1 && consumedsofar > 1) {
-                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                //The following expr won't work because the result of consumedsofar/dailyTarget is 0
-                //consumedsofarpercentile = (int)(consumedsofar/dailyTarget)*100;
-                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                consumedsofarpercentile = consumedsofar * 100 / dailyTarget;
-                amtavailablepercentile = 100 - consumedsofarpercentile;
 
-                int overAmt = 0;
-                if (amtavailablepercentile < 0) {
-                    overAmt = amtavailablepercentile * -1;
-                    overLimitpercentile = overLimitpercentile + overAmt;
-                }
-            } else {
-                if (dailyTarget <= 1) {
-                    targetWarning.setText("Please set a correct Adequate Daily Intake amount");
-                }
-                if (consumedsofar <= 1) {
-                    consofarWarning.setText("Please enter a sodium amount");
-                }
-                consumedsofarpercentile = 1;
-                amtavailablepercentile = 1;
-            }
 
-            if (amtavailablepercentile > 0) {
-                colors = new int[]{Color.BLUE, Color.GREEN};
-                labels = new String[]{"Sodium Consumed", "Sodium Amount Left"};
-                values = new int[]{consumedsofarpercentile, amtavailablepercentile};
-            } else {
-                colors = new int[]{Color.BLUE, Color.RED};
-                labels = new String[]{"Sodium Consumed", "Sodium Amount Exceeded"};
-                values = new int[]{100, overLimitpercentile};
+        if (dailyTarget > 1 && consumedsofar > 1) {
+            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            //The following expr won't work because the result of consumedsofar/dailyTarget is 0
+            //consumedsofarpercentile = (int)(consumedsofar/dailyTarget)*100;
+            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            consumedsofarpercentile = consumedsofar * 100 / dailyTarget;
+            amtavailablepercentile = 100 - consumedsofarpercentile;
+
+            int overAmt = 0;
+            if (amtavailablepercentile < 0) {
+                overAmt = amtavailablepercentile * -1;
+                overLimitpercentile = overLimitpercentile + overAmt;
             }
+        } else {
+            if (dailyTarget <= 1) {
+                targetWarning.setText("Please set a correct Adequate Daily Intake amount");
+            }
+            if (consumedsofar <= 1) {
+                consofarWarning.setText("Please enter a sodium amount");
+            }
+            consumedsofarpercentile = 1;
+            amtavailablepercentile = 1;
         }
+
+
+
+        if (amtavailablepercentile > 0) {
+            colors = new int[]{Color.BLUE, Color.GREEN};
+            colorbk = new int[]{Color.BLUE, Color.GREEN};
+            labels = new String[]{"Sodium Consumed", "Sodium Amount Left"};
+            labelbk = new String[]{"Sodium Consumed", "Sodium Amount Left"};
+            values = new int[]{consumedsofarpercentile, amtavailablepercentile};
+            valuebk = new int[]{consumedsofarpercentile, amtavailablepercentile};
+        } else {
+            colors = new int[]{Color.BLUE, Color.RED};
+            colorbk = new int[]{Color.BLUE, Color.RED};
+            labels = new String[]{"Sodium Consumed", "Sodium Amount Exceeded"};
+            labelbk = new String[]{"Sodium Consumed", "Sodium Amount Exceeded"};
+            values = new int[]{100, overLimitpercentile};
+            valuebk = new int[]{100, overLimitpercentile};
+        }
+
 
         CategorySeries series = new CategorySeries("Pie Graph");
+
+
 
         for(int i=0; i<2; i++){
             series.add(labels[i], values[i]);
@@ -148,44 +148,22 @@ public class Tracking extends Fragment {
 
     private void saveLastState(){
         trackingLastState = this.getActivity().getSharedPreferences("laststate", Context.MODE_PRIVATE);
+        //trackingLastState = getActivity().getSharedPreferences("laststate", 0);
         SharedPreferences.Editor editor = trackingLastState.edit();
 
-        color1bk  = colors[0];
-        label1 = labels[0];
-        value1bk  = values[0];
+        editor.putInt("dailyTargetbk", dailyTargetbk);
+        editor.putInt("consumedsofarbk", consumedsofarbk);
 
-        color2bk  = colors[1];
-        label2 = labels[1];
-        value2bk  = values[1];
-
-
-        editor.putInt("color1", color1bk);
-        editor.putString("label1", label1);
-        editor.putInt("values1", value1bk);
-
-        editor.putInt("color2", color2bk);
-        editor.putString("label2", label2);
-        editor.putInt("values2", value2bk);
-
-
-
-        Log.i("saveLastState()", "before trackingLastState() commit");
-        Log.i("label1", label1);
-        Log.i("value1", String.valueOf(value1bk));
         editor.commit();
     }
 
     private void loadLastState() {
         trackingLastState = this.getActivity().getSharedPreferences("laststate", Context.MODE_PRIVATE);
-
-        colors[0] =  trackingLastState.getInt("color1", color1bk);
-        colors[1] =  trackingLastState.getInt("color2", color2bk);
-        labels[0] =  trackingLastState.getString("label1", label1);
-        labels[1] =  trackingLastState.getString("label2", label2);
-        values[0] =  trackingLastState.getInt("values1", value1bk);
-        values[1] =  trackingLastState.getInt("values2", value2bk);
-
-
+        //trackingLastState = getActivity().getSharedPreferences("laststate", 0);
+        dailyTarget =  trackingLastState.getInt("dailyTargetbk", -1);
+        consumedsofar =  trackingLastState.getInt("consumedsofarbk", -1);
+        dailyTargetbk =  trackingLastState.getInt("dailyTargetbk", -1);
+        consumedsofarbk =  trackingLastState.getInt("consumedsofarbk", -1);
     }
 
     @Override
@@ -193,11 +171,6 @@ public class Tracking extends Fragment {
         super.onDestroyView();
         saveLastState();
     }
-
-
-
-
-
 
 
 
