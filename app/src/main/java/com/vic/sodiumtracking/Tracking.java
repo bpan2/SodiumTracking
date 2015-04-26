@@ -1,22 +1,23 @@
 package com.vic.sodiumtracking;
 
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
 import org.achartengine.model.CategorySeries;
 import org.achartengine.renderer.DefaultRenderer;
 import org.achartengine.renderer.SimpleSeriesRenderer;
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -25,28 +26,26 @@ import static android.util.Log.d;
 
 public class Tracking extends Fragment {
 
+    static int consumedsofarpercentile = 0;
+    static int amtavailablepercentile = 0;
+    static int overLimitpercentile = 0;
+    private static int dailyTarget;
+    private static int dailyTargetbk;
+    private static int consumedsofar;
+    private static int consumedsofarbk;
+    public LinearLayout pielayout = null;
     SharedPreferences trackingLastState;
     View view;
     TextView time=null;
     TextView targetWarning=null;
     TextView consofarWarning=null;
-    private static int dailyTarget;
-    private static int dailyTargetbk;
-    private static int consumedsofar;
-    private static int consumedsofarbk;
-    public LinearLayout pielayout=null;
-    private GraphicalView piechart=null;
-    static int consumedsofarpercentile = 0;
-    static int amtavailablepercentile = 0;
-    static int overLimitpercentile = 0;
-
     int[] colors;
     String[] labels;
     int[] values;
-
     int[] colorbk;
     String[] labelbk;
     int[] valuebk;
+    private GraphicalView piechart = null;
 
     // Required empty public constructor
     public Tracking() {
@@ -78,10 +77,6 @@ public class Tracking extends Fragment {
 
 
         if (dailyTarget > 1 && consumedsofar > 1) {
-            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            //The following expr won't work because the result of consumedsofar/dailyTarget is 0
-            //consumedsofarpercentile = (int)(consumedsofar/dailyTarget)*100;
-            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             consumedsofarpercentile = consumedsofar * 100 / dailyTarget;
             amtavailablepercentile = 100 - consumedsofarpercentile;
 
@@ -173,45 +168,6 @@ public class Tracking extends Fragment {
     }
 
 
-
-
-    public void drawPieChart(int dailyTarget, int consumedsofar){
-
-        if(dailyTarget > 0 && consumedsofar > 0){
-            consumedsofarpercentile = consumedsofar*100/dailyTarget;
-            amtavailablepercentile = 100 - consumedsofarpercentile;
-        }
-        else {
-            consumedsofarpercentile = 1;
-            amtavailablepercentile  = 1;
-        }
-
-        int[] colors = new int[]{Color.BLUE, Color.GREEN};
-        String[] labels = {"Sodium Consumed" , "Sodium Amount Left"};
-        int[] values = {consumedsofarpercentile,amtavailablepercentile};
-        CategorySeries series = new CategorySeries("Pie Graph");
-
-        for(int i=0; i<2; i++){
-            series.add(labels[i], values[i]);
-        }
-
-        DefaultRenderer renderer = new DefaultRenderer();
-        for(int color : colors){
-            SimpleSeriesRenderer r = new SimpleSeriesRenderer();
-            r.setColor(color);
-            renderer.addSeriesRenderer(r);
-        }
-
-        renderer.setChartTitle("Current Sodium Intake Status: \n");
-        renderer.setChartTitleTextSize(30);
-        renderer.setLabelsColor(Color.BLACK);
-        renderer.setLabelsTextSize(20);
-        renderer.setZoomButtonsVisible(true);
-        piechart = ChartFactory.getPieChartView(getActivity(), series, renderer);
-        pielayout.addView(piechart);
-    }
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -221,22 +177,6 @@ public class Tracking extends Fragment {
         timerThread = new Thread(runnable);
         timerThread.start();
 
-    }
-
-
-    class CountDownRunner implements Runnable {
-        // @Override
-        public void run() {
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    doWork();
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                } catch (Exception e) {
-                }
-            }
-        }
     }
 
     public void doWork() {
@@ -263,6 +203,21 @@ public class Tracking extends Fragment {
                 }
             }
         });
+    }
+
+    class CountDownRunner implements Runnable {
+        // @Override
+        public void run() {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    doWork();
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } catch (Exception e) {
+                }
+            }
+        }
     }
 
 }

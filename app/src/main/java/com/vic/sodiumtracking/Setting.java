@@ -2,13 +2,10 @@ package com.vic.sodiumtracking;
 
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,31 +15,90 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class Setting extends Fragment {
-    Bundle state=null;
+    static int age =0;
+    static int ai = 0;
+    static int ul=0;
+    Bundle state = null;
     int agebk = 0;
     int aibk = 0;
     int ulbk = 0;
-
     SharedPreferences settingLastState = null;
-
-    String str=null;
-    static int age =0;
-    static int ai=0;
-    static int ul=0;
-
+    String str = null;
     EditText ageField=null;
     TextView aiField=null;
     TextView ulField=null;
     Button confirmTargetSodAmtbtn, getSodAmtbtn;
+    Button.OnClickListener btnOnClickListener = new Button.OnClickListener() {
+        @Override
+        public void onClick(View v) {
 
+            if (v == getSodAmtbtn) {
+                str = ageField.getText().toString();
+
+                if (str.length() > 0) {
+                    age = Integer.parseInt(ageField.getText().toString());
+                    if (age < 0.5) {
+                        ai = 120;
+                        ul = 120;
+                    }
+                    if ((age > 0.5) && (age <= 1)) {
+                        ai = 370;
+                        ul = 370;
+                    }
+                    if ((age > 1) && (age <= 3)) {
+                        ai = 1000;
+                        ul = 1500;
+                    }
+                    if ((age > 4) && (age <= 9)) {
+                        ai = 1200;
+                        ul = 1900;
+                    }
+                    if ((age > 9) && (age <= 13)) {
+                        ai = 1500;
+                        ul = 2200;
+                    }
+                    if ((age > 13) && (age <= 51)) {
+                        ai = 1500;
+                        ul = 2300;
+                    }
+                    if ((age > 51) && (age <= 70)) {
+                        ai = 1300;
+                        ul = 2300;
+                    }
+                    if (age > 70) {
+                        ai = 1200;
+                        ul = 2300;
+                    }
+
+                    agebk = age;
+                    aibk = ai;
+                    ulbk = ul;
+                    aiField.setText("" + ai);
+                    ulField.setText("" + ul);
+                } else {
+                    Toast.makeText(getActivity(), "Please enter the age ! ", Toast.LENGTH_LONG).show();
+                }
+
+            }
+
+            if (v == confirmTargetSodAmtbtn) {
+                if (aiField == null) {
+                    Toast.makeText(getActivity(), " Adequate Daily Intake is empty ", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getActivity(), " The value you picked is: " + ai, Toast.LENGTH_LONG).show();
+                    mCallback.settingFragToActivity(ai);
+                }
+            }
+        }
+    };
     ActivityCommunicator mCallback;
 
-    public interface ActivityCommunicator {
-        public void settingFragToActivity(int someValue);
+    // Required empty public constructor
+    public Setting() {
     }
 
     @Override
-    public void onAttach(Activity activity){
+    public void onAttach(Activity activity) {
         super.onAttach(activity);
 
         try {
@@ -52,11 +108,6 @@ public class Setting extends Fragment {
                     + " must implement ActivityCommunicator");
         }
     }
-
-    // Required empty public constructor
-    public Setting() {
-    }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -160,46 +211,9 @@ public class Setting extends Fragment {
     }*/
 
 
-    Button.OnClickListener btnOnClickListener = new Button.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-
-            if (v == getSodAmtbtn) {
-                str = ageField.getText().toString();
-
-                if(str.length() > 0) {
-                    age = Integer.parseInt(ageField.getText().toString());
-                    if (age < 0.5)                 { ai = 120;  ul = 120; }
-                    if ((age > 0.5) && (age <= 1)) { ai = 370;  ul = 370; }
-                    if ((age > 1) && (age <= 3))   { ai = 1000; ul = 1500;}
-                    if ((age > 4) && (age <= 9))   { ai = 1200; ul = 1900;}
-                    if ((age > 9) && (age <= 13))  { ai = 1500; ul = 2200;}
-                    if ((age > 13) && (age <= 51)) { ai = 1500; ul = 2300;}
-                    if ((age > 51) && (age <= 70)) { ai = 1300; ul = 2300;}
-                    if (age > 70)                  { ai = 1200; ul = 2300;}
-
-                    agebk = age;
-                    aibk = ai;
-                    ulbk = ul;
-                    aiField.setText("" + ai);
-                    ulField.setText("" + ul);
-                }
-                else{
-                    Toast.makeText(getActivity(), "Please enter the age ! ", Toast.LENGTH_LONG).show();
-                }
-
-            }
-
-            if (v == confirmTargetSodAmtbtn) {
-                if (aiField == null) {
-                    Toast.makeText(getActivity(), " Adequate Daily Intake is empty ", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getActivity()," The value you picked is: " + ai, Toast.LENGTH_LONG ).show();
-                    mCallback.settingFragToActivity(ai);
-                }
-            }
-        }
-    };
+    public interface ActivityCommunicator {
+        public void settingFragToActivity(int someValue);
+    }
 
  /*
     @Override

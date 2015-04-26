@@ -2,12 +2,11 @@ package com.vic.sodiumtracking;
 
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +24,7 @@ import static android.R.layout.simple_dropdown_item_1line;
 
 public class Entering extends Fragment {
 
+    static String str2 = null;
     DBAdapter db = null;
     Cursor actvCursor;
     AutoCompleteTextView actv;
@@ -32,19 +32,27 @@ public class Entering extends Fragment {
     EditText foodNameField, sodAmtField;
     Button confirmbtn;
     String str=null;
-    static String str2=null;
+    Button.OnClickListener btnOnClickListener = new Button.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (v == confirmbtn) {
+                if (str != null && str2 != null) {
+                    int sodValue = Integer.parseInt(str2);
+                    Toast.makeText(getActivity(), "The value you picked is: " + str2, Toast.LENGTH_LONG).show();
+                    mCallback.enteringFragToActivity(sodValue);
+
+                } else {
+                    Toast.makeText(getActivity(), "Please pick a food", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    };
     ArrayList<String> sodValdata = new ArrayList<>();
     ArrayList<String> foodName = new ArrayList<String>();
     String[] soddata=null;
     String[] foodname=null;
     View v;
-
-
     ActivityCommunicator mCallback;
-
-    public interface ActivityCommunicator {
-        public void enteringFragToActivity(int sodValue);
-    }
 
     // Required empty public constructor
     public Entering() {
@@ -107,27 +115,8 @@ public class Entering extends Fragment {
         return v;
     }
 
-
-    Button.OnClickListener btnOnClickListener = new Button.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if(v == confirmbtn){
-                if(str != null && str2 != null) {
-                    int sodValue = Integer.parseInt(str2);
-                    Toast.makeText(getActivity(),"The value you picked is: " + str2, Toast.LENGTH_LONG ).show();
-                    mCallback.enteringFragToActivity(sodValue);
-
-                }
-                else{
-                    Toast.makeText(getActivity(), "Please pick a food", Toast.LENGTH_LONG).show();
-                }
-            }
-        }
-    };
-
-
     @Override
-    public void onAttach(Activity activity){
+    public void onAttach(Activity activity) {
         super.onAttach(activity);
 
         try {
@@ -138,10 +127,14 @@ public class Entering extends Fragment {
         }
     }
 
-
     @Override
     public void onResume() {
         super.onResume();
+    }
+
+
+    public interface ActivityCommunicator {
+        public void enteringFragToActivity(int sodValue);
     }
 
 
